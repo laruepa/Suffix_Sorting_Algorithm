@@ -1,3 +1,13 @@
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+; 				Suffix Sorting in NASM			  										  ;
+;The program will return a tree of the entered string's suffixes sorted in lexographical  ;
+;order																					  ;
+;Instructions: This program takes 2 arguements,                                           ;
+;				(1) 'sufsort'                                                             ;
+;				(2) String of characters 0,1,or 2 with max length 30                      ;        
+;																						  ;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
 %include "asm_io.inc"
 global asm_main
 
