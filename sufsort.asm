@@ -8,26 +8,30 @@
 ;																						  ;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-%include "asm_io.inc"
-global asm_main
+%include "asm_io.inc" ;Link external c functions
+global asm_main	;Declare program start-point
 
 section .data
+	;Pre-declare memory for output messages and assign message identifiers
 	msg1: db 'length error',0
 	msg2: db 'composition error',0
 	msg3: db 'error - program must have 2 arguments',0
 	msg4: db 'sorted suffixes:',0
-	msg5: db 
+	msg5: db 'please press key to continue',0
 section .bss
-	X resb 31
-	Z resb 31 
-	Y resd 31
-	N resb 1
-	i resd 1
-	j resd 1
-	m resd 1
-	n resd 1
+	;Pre-declare memory for variables and assign variable sizes
+	;31 bytes max for input string length 30 chars
+	X resb 31	;Character array
+	Z resb 31 	;Character array for sufcmp() subroutine
+	Y resd 31	;Bubble-sort array of address pointers to X
+	;1 byte integers
+	N resb 1	;Number of input characters
+	i resd 1	;Index of for-loop1
+	j resd 1	;Index of for-loop2
+	m resd 1	;Spare 1 byte int
+	n resd 1	;Spare 1 byte int
 section .text
-
+	;Section not used
 asm_main:
 	enter 0, 0
 	pusha
