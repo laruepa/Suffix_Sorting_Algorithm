@@ -33,65 +33,68 @@ section .bss
 section .text
 	;Section not used
 asm_main:
-	enter 0, 0
-	pusha
+	enter 0, 0	;Declare start of stack frame
+	pusha	;Push current register values to stack
 	
-	mov ebx, dword [ebp+12]  
-	mov eax, dword [ebx+4]	
+	mov ebx, dword [ebp+12]		;Move program args into general registers
+	mov eax, dword [ebx+4]		
 
-	mov [N], byte 0 
+	mov [N], byte 0		;Initialize N to zero
 	mov ecx,eax
 	mov edi, 0
+	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;Start of Sanity Checks;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-	cmp [ebp+8], byte 2
-	je .args_correct		 
-		mov eax, msg3
-        	call print_string
+	cmp [ebp+8], byte 2		;Check for correct number of program args (2)
+	je .args_correct	;Jump structure (if structure equivalent) 
+		mov eax, msg3 		
+        	call print_string	;Use print_string function from included C library, print arg error
 		call print_nl
-		popa
+		popa 	;Return stack to pre-program state
 		leave
-		ret
-	.args_correct:
+		ret 	;Function return
+	.args_correct: 	;Program continues here if number of args correct
 	
-	.CHARLOOP:
-	mov al, [ecx] 		
-	inc ecx 		
+	.CHARLOOP: 	;Enter loop structure to count input string length and check for invalid chars
+	mov al, [ecx] 		;Move first 4 bytes of input string to al register
+	inc ecx 			;Increment ecx (counting number of characters / loop iterations)
 
-	cmp al, 0  		
+	cmp al, 0  			;Check for end of byte array (null character)
 
-	je .end_length_check
-		add [N], byte 1
+	je .end_length_check	;Jump out of character counting loop if current char equals null char
+		add [N], byte 1		
 			cmp [N], byte 31
-		jl .length_ok 			;Display Length Error
+		jl .length_ok 			;Display length error if N larger than 31 (max size of string)
 		mov eax, msg1
 		call print_string
 		call print_nl
-		popa
+		popa 	;Return stack to pre-program state
 		leave
-		ret
-		.length_ok:
+		ret 	;Function return
+		.length_ok: 	;This section defines behaviour if length ok
+		
+		;Check if current iterated character is valid (0,1,2)
 		cmp al, '0'
 		je .char_correct
 		cmp al, '1'
 		je .char_correct
 		cmp al, '2'
-		je .char_correct	;Display Composition Error
+		je .char_correct	;Display composition error for invalid character entry
 			mov eax, msg2
 			call print_string
 			call print_nl
-			popa
+			popa 	;Return stack to pre-program state
 			leave
-			ret
-		.char_correct:
-							;add to array here
-		mov [X+edi], AL		;Add character to X
-		mov esi, dword [N]
+			ret 	;Function return
+		.char_correct:		
+							
+		mov [X+edi], AL		;Add current iterated character to X
+		mov esi, dword [N]	
 		sub esi, 1
 		mov [Y+4*edi], esi		;Add N to Y[]
 		inc edi	
-		jmp .CHARLOOP
+		jmp .CHARLOOP		;If program reaches here, loop will iterate again
 
-	.end_length_check:
+	.end_length_check:		;Length and composition checks completed here, arguements ok'd, program continues
 
 	mov eax, dword[N]
 
@@ -103,7 +106,7 @@ asm_main:
 	mov ecx, dword [N]
 	mov eax, dword [N]
 	mov [i], eax
-	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;End of Sanity Checks;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 	.forloop_1:
 	mov [j], dword 1
 	mov eax, [i]
