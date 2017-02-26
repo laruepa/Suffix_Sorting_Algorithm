@@ -107,7 +107,10 @@ asm_main:
 	mov eax, dword [N]
 	mov [i], eax
 	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;End of Sanity Checks;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-	.forloop_1:
+	
+	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;Start of Bubble Sort;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+	
+	.forloop_1: 	;Nested for-loops generate subsets to be bubble sorted in sufcmp function 
 	mov [j], dword 1
 	mov eax, [i]
 
@@ -121,40 +124,40 @@ asm_main:
 	push eax 			
 	mov ebx, [j]
 	sub ebx, dword 1
-	mov eax, [Y+4*ebx]
+	mov eax, [Y+4*ebx]	;Generate value of i
 
-	push eax	 		;Push value of subcmp(i) to stack
+	push eax	 		;Push value of i to stack for use by sufcmp()
 	mov ebx, [j]
 	sub ebx, dword 0
-	mov eax, [Y+4*ebx]
-	push eax			;Push value of subcmp(j) to stack
-	call sufcmp
+	mov eax, [Y+4*ebx]	;Generate value of j
+	push eax			;Push value of j to stack for use by sufcmp()
+	call sufcmp 		;Call sufcmp() subroutine
 	
-	cmp eax, 0
+	cmp eax, 0			;Check whether the returned value of sufcmp() is 1 or -1
 	jle .else
-		mov ebx, [j]
+		mov ebx, [j]	;Reorder addresses in Y according to sufcmp return value
 		sub ebx, 1
-		mov eax, [Y+4*ebx]		;variable t
+		mov eax, [Y+4*ebx]	
 		mov edx, [j]
 		sub edx, 0
 		mov ecx, [Y+4*edx]
 		mov [Y+4*ebx], ecx
 		mov [Y+4*edx], eax
 
-	mov ecx, dword 0			;reset index
+	mov ecx, dword 0			;Reset index
 	.else:
 	add [j], dword 1
 	jmp .forloop_2
 	
 	.end_loop_2:
-	cmp [i], dword 2
+	cmp [i], dword 2			;Check loop exit conditions (range 1 - i)
 	je .end_loop_1
 	sub [i], dword 1
 	jmp .forloop_1
 
 	.end_loop_1:
 
-	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;End of Bubble Sort;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 	mov eax, msg4
 	call print_nl
 	call print_string			
