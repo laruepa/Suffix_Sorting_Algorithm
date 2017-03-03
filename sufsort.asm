@@ -158,38 +158,39 @@ asm_main:
 	.end_loop_1:
 
 	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;End of Bubble Sort;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+	
 	mov eax, msg4
 	call print_nl
-	call print_string			
+	call print_string		;Display 'sorted suffixes' title before listing suffixes 	
 	call print_nl				
 	
 	mov [i], dword 0
 	mov edx, [N]
-	sub edx, 1	
+	sub edx, 1		;Subtract 1 from number of characters counted - removes null character from count N
 	.forloop_3:
-	cmp [i], edx
-	jg .end_loop_3
+	cmp [i], edx		;Here, [i] represents for loop index, compare with N to see if gone through all chars
+	jg .end_loop_3		;Loop Through i indices and display X[i] to X[end]
 	mov ecx, [i]
-	mov ebx, [Y+4*ecx]			;Y index
+	mov ebx, [Y+4*ecx]		
 	mov eax, X
 	add eax, ebx
-	call print_string			
+	call print_string		;Print suffix to screen	
 	call print_nl
-	add [i], dword 1
+	add [i], dword 1	;For loop counter increments here
 	jmp .forloop_3
 	.end_loop_3:
 
-	mov eax, msg5 				
+	mov eax, msg5 		
 	call print_nl
-	call print_string
+	call print_string	;Print message prompting user to press enter
 	call print_nl
 	.terminate:
-	call read_char				;wait for enter keypress
-	cmp al, `\n`
+	call read_char		;Wait for enter keypress
+	cmp al, `\n`		;Compare key entered to newline character, get new character if not equal
 	jne .terminate
 
-	leave
-	ret
+	leave 		;Leave current stack-frame
+	ret 		;Function return
 
 sufcmp:
 	push ebp
