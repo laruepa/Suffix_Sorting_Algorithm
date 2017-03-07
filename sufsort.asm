@@ -193,90 +193,96 @@ asm_main:
 	ret 		;Function return
 
 sufcmp:
-	push ebp
+	push ebp	;Push driver function register values stack
 	mov ebp, esp
-	mov eax, dword [ebp+16] 	;Address of X
+	mov eax, dword [ebp+16] 	;Address of X from stack
 	mov ecx, dword 0
 
-	.length:
-	cmp byte [eax+ecx], byte 0
+	.length:	;Check length of suffix from address Z (on stack) to end of char array
+	cmp byte [eax+ecx], byte 0 		;Check for end of array null character
 	je .length_end
 	add ecx, dword 1
 	jmp .length
-	.length_end:
-	mov edi, ecx				;store length (N) in edi
+	.length_end: 		;Exit count loop
+	mov edi, ecx		;Store length of Z in edi
 
-	mov eax, dword [ebp+16] 	;Address of X
+	mov eax, dword [ebp+16] 	;Address of X from stack
 	mov ecx, dword 0
-	.addz:
-	cmp byte [X+ecx], byte 0
+	.addz:						;Copy contents of X into function variable Z
+	cmp byte [X+ecx], byte 0	;Look for end of char array null character
 	je .addz_end
 	mov al, byte [X+ecx]
-	mov [Z+ecx], al		
+	mov [Z+ecx], al				;Move value at address of X plus loop index to address of Z plus loop index
 	add ecx, dword 1
 	jmp .addz
 	.addz_end:
 	mov [Z+ecx], byte 0
 
-	mov edx, [ebp+8]	;value of j
+	mov edx, [ebp+8]	;Value of j from stack
 	mov ebx, edi
-	sub ebx, edx
-	mov [m], ebx 		;store m
+	sub ebx, edx		;Find address of first suffix by subtracting i from len(Z)
+	mov [m], ebx 		;Store address of first suffix to be compared
 
 	
-	mov edx, [ebp+12]	
+	mov edx, [ebp+12]	;Value of i from stack
     mov ebx, edi
-    sub ebx, edx
-	mov [n], ebx		;store n
+    sub ebx, edx		;Find address of second suffix by subtracting j from len(Z)
+	mov [n], ebx		;Store address of second suffix to be compared
 
 	mov eax, [m]
 
-	cmp ebx, [m]		
+	cmp ebx, [m]		;Find which suffix has smallest length
 	jl .size
-	mov edi, [m]		;store k
+	mov edi, [m]		;If m smallest, store length in edi
 	jmp .size_end
 	.size:
-	mov edi, [n]		;store k
+	mov edi, [n]		;If n smallest, store length in edi
 	.size_end:
 
 	mov ecx, dword 0
-	.forloop:
+	.forloop:			;Initialize for loop with range 0 to smallest suffix length (edi) 
+	
+	;Loop through values of the two suffixes from left to write
+	;Compare values at equal indices until a difference in values found (e.g. 1,0)
+	
 	cmp ecx, edi
 	je .end_forloop	
 	
-	mov edx, [ebp+12] 	
+	mov edx, [ebp+12] 		;Value of i
 	add edx, ecx
 	mov al, [Z+edx]		
 
-	mov edx, [ebp+8] 	;value of j
+	mov edx, [ebp+8] 		;Value of j
 	add edx, ecx
 
-	cmp al, [Z+edx]		
-	jl .if_1
+	cmp al, [Z+edx]			;Compare two suffix values at for-loop index
+	jl .if_1 				;Jump out of loop when suffix1[i] not equal to suffix2[i]
 	jg .if_2
 	inc ecx		
 	jmp .forloop
 
-	.if_1:
+	.if_1:					;If suffix1 < suffix2, return -1 to main function
 	mov eax, -1
 	jmp .return
 
-	.if_2:
+	.if_2: 					;If suffix1 > suffix2, return 1 to main function
 	mov eax, 1
 	jmp .return
 
 	.end_forloop:	
-		
+	
+	;If all the characters in the two suffixes are identical, this section runs	
 	mov ebx, [m]
 	cmp [n], ebx
-	jl .less
+	jl .less				;Return 1 if suffixes are the same length
 	mov eax, 1
 	jmp .return
 
 	.less:
-	mov eax, -1
+	mov eax, -1				;Return -1 suffix1 shorter than suffix2
 	
 	.return:
-	leave
-	ret
+	leave 					
+	ret 					;Return from function
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;End of Suffix Compare Function;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 	
